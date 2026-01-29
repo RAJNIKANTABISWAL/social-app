@@ -7,7 +7,6 @@ import type tldts from 'tldts'
 
 import {isEmailMaybeInvalid} from '#/lib/strings/email'
 import {logger} from '#/logger'
-import {isNative} from '#/platform/detection'
 import {useSignupContext} from '#/screens/Signup/state'
 import {Policies} from '#/screens/Signup/StepInfo/Policies'
 import {atoms as a, native} from '#/alf'
@@ -31,6 +30,8 @@ import {
   MIN_ACCESS_AGE,
   useAgeAssuranceRegionConfigWithFallback,
 } from '#/ageAssurance/util'
+import {useAnalytics} from '#/analytics'
+import {IS_NATIVE} from '#/env'
 import {
   useDeviceGeolocationApi,
   useIsDeviceGeolocationGranted,
@@ -59,6 +60,7 @@ export function StepInfo({
   isLoadingStarterPack: boolean
 }) {
   const {_} = useLingui()
+  const ax = useAnalytics()
   const {state, dispatch} = useSignupContext()
   const preemptivelyCompleteActivePolicyUpdate =
     usePreemptivelyCompleteActivePolicyUpdate()
@@ -165,13 +167,9 @@ export function StepInfo({
     dispatch({type: 'setEmail', value: email})
     dispatch({type: 'setPassword', value: password})
     dispatch({type: 'next'})
-    logger.metric(
-      'signup:nextPressed',
-      {
-        activeStep: state.activeStep,
-      },
-      {statsig: true},
-    )
+    ax.metric('signup:nextPressed', {
+      activeStep: state.activeStep,
+    })
   }
 
   return (
@@ -325,7 +323,7 @@ export function StepInfo({
                           </Trans>
                         )}
                       </Admonition.Text>
-                      {isNative &&
+                      {IS_NATIVE &&
                         !isDeviceGeolocationGranted &&
                         isOverAppMinAccessAge && (
                           <Admonition.Text>
@@ -357,7 +355,7 @@ export function StepInfo({
               ) : undefined}
             </View>
 
-            {isNative && (
+            {IS_NATIVE && (
               <DeviceLocationRequestDialog
                 control={locationControl}
                 onLocationAcquired={props => {
