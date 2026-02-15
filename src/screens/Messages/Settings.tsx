@@ -5,7 +5,6 @@ import {useLingui} from '@lingui/react'
 import {type NativeStackScreenProps} from '@react-navigation/native-stack'
 
 import {type CommonNavigatorParams} from '#/lib/routes/types'
-import {isNative} from '#/platform/detection'
 import {useUpdateActorDeclaration} from '#/state/queries/messages/actor-declaration'
 import {useProfileQuery} from '#/state/queries/profile'
 import {useSession} from '#/state/session'
@@ -16,6 +15,7 @@ import {Divider} from '#/components/Divider'
 import * as Toggle from '#/components/forms/Toggle'
 import * as Layout from '#/components/Layout'
 import {Text} from '#/components/Typography'
+import {IS_NATIVE} from '#/env'
 import {useBackgroundNotificationPreferences} from '../../../modules/expo-background-notification-handler/src/BackgroundNotificationHandlerProvider'
 
 type AllowIncoming = 'all' | 'none' | 'following'
@@ -103,10 +103,12 @@ export function MessagesSettingsScreenInner({}: Props) {
               </Toggle.Item>
               <Toggle.Item
                 name="none"
-                label={_(msg`No one`)}
+                label={_(
+                  msg({context: 'allow messages from', message: `No one`}),
+                )}
                 style={[a.justify_between, a.py_sm]}>
                 <Toggle.LabelText>
-                  <Trans>No one</Trans>
+                  <Trans context="allow messages from">No one</Trans>
                 </Toggle.LabelText>
                 <Toggle.Radio />
               </Toggle.Item>
@@ -118,7 +120,7 @@ export function MessagesSettingsScreenInner({}: Props) {
               you choose.
             </Trans>
           </Admonition>
-          {isNative && (
+          {IS_NATIVE && (
             <>
               <Divider style={a.my_md} />
               <Text style={[a.text_lg, a.font_semi_bold]}>

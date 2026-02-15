@@ -5,7 +5,6 @@ import {useLingui} from '@lingui/react'
 
 import {urls} from '#/lib/constants'
 import {getUserDisplayName} from '#/lib/getUserDisplayName'
-import {logger} from '#/logger'
 import {useSession} from '#/state/session'
 import {atoms as a, useBreakpoints, useTheme} from '#/alf'
 import {Button, ButtonText} from '#/components/Button'
@@ -14,6 +13,7 @@ import {VerifierCheck} from '#/components/icons/VerifierCheck'
 import {Link} from '#/components/Link'
 import {Text} from '#/components/Typography'
 import {type FullVerificationState} from '#/components/verification'
+import {useAnalytics} from '#/analytics'
 import type * as bsky from '#/types/bsky'
 
 export {useDialogControl} from '#/components/Dialog'
@@ -28,7 +28,7 @@ export function VerifierDialog({
   verificationState: FullVerificationState
 }) {
   return (
-    <Dialog.Outer control={control}>
+    <Dialog.Outer control={control} nativeOptions={{preventExpansion: true}}>
       <Dialog.Handle />
       <Inner
         control={control}
@@ -49,6 +49,7 @@ function Inner({
   verificationState: FullVerificationState
 }) {
   const t = useTheme()
+  const ax = useAnalytics()
   const {_} = useLingui()
   const {gtMobile} = useBreakpoints()
   const {currentAccount} = useSession()
@@ -122,17 +123,12 @@ function Inner({
               }),
             )}
             size="small"
-            variant="solid"
             color="primary"
             style={[a.justify_center]}
             onPress={() => {
-              logger.metric(
-                'verification:learn-more',
-                {
-                  location: 'verifierDialog',
-                },
-                {statsig: true},
-              )
+              ax.metric('verification:learn-more', {
+                location: 'verifierDialog',
+              })
             }}>
             <ButtonText>
               <Trans context="english-only-resource">Learn more</Trans>
@@ -141,7 +137,6 @@ function Inner({
           <Button
             label={_(msg`Close dialog`)}
             size="small"
-            variant="solid"
             color="secondary"
             onPress={() => {
               control.close()

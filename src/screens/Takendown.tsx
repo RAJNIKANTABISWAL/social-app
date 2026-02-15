@@ -12,9 +12,7 @@ import {
   BLUESKY_MOD_SERVICE_HEADERS,
   MAX_REPORT_REASON_GRAPHEME_LENGTH,
 } from '#/lib/constants'
-import {useEnableKeyboardController} from '#/lib/hooks/useEnableKeyboardController'
 import {cleanError} from '#/lib/strings/errors'
-import {isWeb} from '#/platform/detection'
 import {useAgent, useSession, useSessionApi} from '#/state/session'
 import {CharProgress} from '#/view/com/composer/char-progress/CharProgress'
 import {Logo} from '#/view/icons/Logo'
@@ -24,6 +22,7 @@ import * as TextField from '#/components/forms/TextField'
 import {SimpleInlineLinkText} from '#/components/Link'
 import {Loader} from '#/components/Loader'
 import {P, Text} from '#/components/Typography'
+import {IS_WEB} from '#/env'
 
 const COL_WIDTH = 400
 
@@ -119,9 +118,7 @@ export function Takendown() {
     </Button>
   )
 
-  const webLayout = isWeb && gtMobile
-
-  useEnableKeyboardController(true)
+  const webLayout = IS_WEB && gtMobile
 
   return (
     <View style={[a.util_screen_outer, a.flex_1]}>
